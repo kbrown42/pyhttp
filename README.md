@@ -18,3 +18,7 @@ To run the tests:
 ```
     $ pytest
 ```
+or 
+```
+    $ python setup.py test
+```
