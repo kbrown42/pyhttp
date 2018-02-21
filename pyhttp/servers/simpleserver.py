@@ -3,6 +3,10 @@ from pyhttp.requests import BaseHttpRequestHandler
 
 
 class BaseServer(object):
+    """
+    Basic class for a simple http server.  Handles client connections and passes off
+    to a RequestHandler class.
+    """
     def __init__(self, host='localhost', port=8888,
                  requestHandler=BaseHttpRequestHandler):
         self.host = host
@@ -18,20 +22,8 @@ class BaseServer(object):
         try:
             while True:
                 client_conn, client_addr = self.socket.accept()
-                print(f'Received conn from {client_addr}')
-
-                # req = Request(raw_req)
                 self.handle_request(client_conn, client_addr)
-                # http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n"
-                # msg = "Hello, World!\r\n\r\n"
-                #
-                # http_response = http_response.encode('utf-8')
-                # msg = msg.encode('utf-8')
-                # client_conn.sendall(http_response)
-                # client_conn.sendall(msg)
-                # print("Sent response")
-                # client_conn.close()
-                # print("closed connection")
+
         except KeyboardInterrupt:
             print("Received shutdown...")
             self.socket.shutdown(socket.SHUT_RDWR)
