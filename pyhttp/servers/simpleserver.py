@@ -7,6 +7,7 @@ class BaseServer(object):
     Basic class for a simple http server.  Handles client connections and passes off
     to a RequestHandler class.
     """
+
     def __init__(self, host='localhost', port=8888,
                  requestHandler=BaseHttpRequestHandler):
         self.host = host
@@ -22,13 +23,25 @@ class BaseServer(object):
         try:
             while True:
                 client_conn, client_addr = self.socket.accept()
-                self.handle_request(client_conn, client_addr)
+                self.process_request(client_conn, client_addr)
 
         except KeyboardInterrupt:
             print("Received shutdown...")
             self.socket.shutdown(socket.SHUT_RDWR)
             self.socket.close()
 
-    def handle_request(self, conn, addr):
+    def process_request(self, conn, addr):
+        """
+        Calls finish request.  Serves as one layer of indirection
+        to allow for overriding by a threading mixin.
+        :param conn: client socket making request
+        :param addr: address of client making request
+        """
+        self.finish_request(conn, addr, self)
+
+    def finish_request(self, conn, addr):
         self.requestHandler(conn, addr, self)
 
+
+class ThreadingMixin:
+    pass
