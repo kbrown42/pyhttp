@@ -205,6 +205,3 @@ def html_head(title=''):
     </head>
     '''
 
-
-def html_body():
-    return ''
