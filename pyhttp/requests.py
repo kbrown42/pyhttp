@@ -180,6 +180,7 @@ class BaseHttpRequestHandler(object):
                 self.send_response(HTTPStatus.OK)
                 self.send_header('Content-Type', content_type)
                 self.send_header('Connection', 'close')
+                self.send_header('Content-Length', f_size)
                 self.end_header()
                 self.flush_header()
 
