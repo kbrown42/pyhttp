@@ -2,6 +2,7 @@ from http import HTTPStatus
 import os
 from urllib import parse
 import html
+import socket
 
 
 class Request(object):
@@ -80,7 +81,8 @@ class BaseHttpRequestHandler(object):
         buffer.append(doctype())
         buffer.append(html_head(f'Directory listing for {path}'))
         buffer.append('<body>')
-
+        buffer.append(h1_header(f'Directory listing for {path}'))
+        buffer.append('<hr>')
         files = os.listdir(path)
 
         buffer.append("<ul>\n")
@@ -136,7 +138,6 @@ class BaseHttpRequestHandler(object):
         """
         Writes the header buffer to the socket and clears header buffer
         """
-        print(self.header_buffer)
         header_bytes = ''.join(self.header_buffer)
         self.wfile.write(header_bytes.encode('utf-8'))
         self.header_buffer = []
@@ -190,6 +191,7 @@ class SocketWriter(object):
         return len(b)
 
     def close(self):
+        self._sock.shutdown(socket.SHUT_WR)
         self._sock.close()
 
 def doctype():
@@ -204,4 +206,7 @@ def html_head(title=''):
     <title>{title}</title>
     </head>
     '''
+
+def h1_header(txt):
+    return f'<h1>{txt}</h1>'
 

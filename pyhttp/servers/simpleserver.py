@@ -1,5 +1,6 @@
 import socket
 from pyhttp.requests import BaseHttpRequestHandler
+import threading
 
 
 class BaseServer(object):
@@ -9,11 +10,11 @@ class BaseServer(object):
     """
 
     def __init__(self, host='localhost', port=8888,
-                 requestHandler=BaseHttpRequestHandler):
+                 request_handler=BaseHttpRequestHandler):
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.requestHandler = requestHandler
+        self.requestHandler = request_handler
 
     def serve_forever(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -26,9 +27,7 @@ class BaseServer(object):
                 self.process_request(client_conn, client_addr)
 
         except KeyboardInterrupt:
-            print("Received shutdown...")
-            self.socket.shutdown(socket.SHUT_RDWR)
-            self.socket.close()
+            self.close()
 
     def process_request(self, conn, addr):
         """
@@ -42,6 +41,42 @@ class BaseServer(object):
     def finish_request(self, conn, addr):
         self.requestHandler(conn, addr, self)
 
+    def close(self):
+        self.socket.shutdown(socket.SHUT_RDWR)
+        self.socket.close()
+
 
 class ThreadingMixin:
+    _threads = None
+
+    def process_request(self, conn, addr):
+        thread = threading.Thread(target=self.threaded_process_request,
+                                  args=(conn, addr))
+        thread.daemon = False
+        if self._threads is None:
+            self._threads = []
+
+        self._threads.append(thread)
+        thread.start()
+
+    def threaded_process_request(self, conn, addr):
+        self.finish_request(conn, addr)
+
+    def close(self):
+        super(ThreadingMixin, self).close()
+        threads = self._threads
+        self._threads = None
+        if threads is not None:
+            for thread in threads:
+                thread.join()
+
+
+class ThreadedServer(ThreadingMixin, BaseServer):
+    """
+    Uses the basic functionality and call api of BaseServer.
+    Overrides the initial processing of a request to put it into a thread.
+    """
     pass
+
+
+
