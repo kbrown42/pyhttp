@@ -3,6 +3,8 @@ import os
 from urllib import parse
 import html
 import socket
+import mimetypes
+import posixpath
 
 
 class Request(object):
@@ -161,8 +163,30 @@ class BaseHttpRequestHandler(object):
 
         # Otherwise, we're dealing with a file.  Could be cgi or txt
         # or something else.  Handle this later.
-        else:
-            pass
+        elif os.path.isfile(path):
+            base_path, ext = posixpath.splitext(path)
+            content_type = mimetypes.types_map.get(ext, 'text/plain')
+            f = None
+            try:
+                f = open(path, 'rb')
+
+            except OSError:
+                # TODO: do error handling
+                self.send_response(HTTPStatus.NOT_FOUND)
+
+            if f is not None:
+                f_size = os.path.getsize(path)
+
+                self.send_response(HTTPStatus.OK)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Connection', 'close')
+                self.end_header()
+                self.flush_header()
+
+                self.wfile.write(f.read())
+                self.finish()
+
+
 
     def finish(self):
         self.wfile.close()
