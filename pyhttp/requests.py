@@ -13,7 +13,7 @@ class Request(object):
     It takes a client socket connection and stores the http command, resource path requested,
     and http version.  It also stores a headers dictionary.
 
-    @:param conn: A client socket connection
+    :param conn: A client socket connection
     """
 
     def __init__(self, conn):
@@ -39,7 +39,15 @@ class Request(object):
 
 
 class BaseHttpRequestHandler(object):
-    """Base request handler. Parses connection into a :class:`Request <Request>` object"""
+    """Base request handler. Parses connection into a :class:`Request <Request>` object
+
+    :param conn: A client connection socket
+    :param addr: Client address
+    :param server: Server instance that accepted the client connection
+    :param directory: Base directory to serve files from.
+            Defaults to current working directory
+    """
+
     def __init__(self, conn, addr, server, directory=None):
         self.conn = conn
         self.client_addr = addr
@@ -196,8 +204,6 @@ class BaseHttpRequestHandler(object):
                 self.wfile.write(f.read())
                 self.finish()
 
-
-
     def finish(self):
         self.wfile.close()
 
@@ -228,6 +234,7 @@ class SocketWriter(object):
         self._sock.shutdown(socket.SHUT_WR)
         self._sock.close()
 
+
 def doctype():
     return "<!DOCTYPE html>\n"
 
@@ -241,6 +248,6 @@ def html_head(title=''):
     </head>
     '''
 
+
 def h1_header(txt):
     return f'<h1>{txt}</h1>'
-

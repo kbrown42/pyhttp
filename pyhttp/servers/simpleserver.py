@@ -36,8 +36,8 @@ class BaseServer(object):
         """
         Calls finish request.  Serves as one layer of indirection
         to allow for overriding by a threading mixin.
-        :param conn: client socket making request
-        :param addr: address of client making request
+        :param conn: Open client socket
+        :param addr: Client socket address
         """
         self.finish_request(conn, addr, self)
 
@@ -45,14 +45,30 @@ class BaseServer(object):
         self.requestHandler(conn, addr, self)
 
     def close(self):
+        # Not sure that we need this first line
         self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
 
 
 class ThreadingMixin:
+    """
+    A threading mixing class that overrides the :func:`process_request`
+    function.  Rather than immediately calling the request handler class,
+    it creates a processing thread whose target function is
+    :func:`threaded_process_request`.  Also keeps track of all threads created
+    and waits for them to finish before closing the connection.
+    """
     _threads = None
 
     def process_request(self, conn, addr):
+        """
+        Overrides :func:`process_request` in :class:`BaseServer`.  Passes
+        arguments to a function to be run in separate thread.  Stores the thread
+        in the  class attribute list :attr:`_threads`.
+
+        :param conn: Open client socket
+        :param addr: Client socket address
+        """
         thread = threading.Thread(target=self.threaded_process_request,
                                   args=(conn, addr))
         thread.daemon = False
@@ -66,6 +82,7 @@ class ThreadingMixin:
         self.finish_request(conn, addr)
 
     def close(self):
+        """"""
         super(ThreadingMixin, self).close()
         threads = self._threads
         self._threads = None
@@ -78,6 +95,7 @@ class ThreadedServer(ThreadingMixin, BaseServer):
     """
     Uses the basic functionality and call api of BaseServer.
     Overrides the initial processing of a request to put it into a thread.
+    For details see :class:`ThreadingMixin <pyhttp.ThreadingMixin>`
     """
     pass
 

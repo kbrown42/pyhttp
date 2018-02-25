@@ -14,10 +14,12 @@ Multi-Threading Support
 ------------------------
 .. autoclass:: pyhttp.ThreadedServer
 .. autoclass:: pyhttp.ThreadingMixin
+.. automethod:: pyhttp.ThreadingMixin.process_request
 
 Request Handling
 ==================
 .. autoclass:: pyhttp.Request
 .. autoclass:: pyhttp.BaseHttpRequestHandler
+.. autoclass:: pyhttp.requests.SocketWriter
 
 
