@@ -84,7 +84,10 @@ class ThreadingMixin:
         self.finish_request(conn, addr)
 
     def close(self):
-        """"""
+        """
+        Calls :func:`BaseServer.close`.  Joins threads before shutting down.
+
+        """
         super(ThreadingMixin, self).close()
         threads = self._threads
         self._threads = None

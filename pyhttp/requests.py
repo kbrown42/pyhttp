@@ -67,9 +67,11 @@ class BaseHttpRequestHandler(object):
         """
         Takes the path specified in the request header and translates to an
         absolute path on the server's filesystem. Doesn't accept relative
-        path markers like '.' or '..'.
+        path markers like '.' or '..' currently.
+
         :param path: path from http request
         :return: absolute file path on the server's FS
+        :rtype: str
         """
         # just in case there are query arguments
         # there shouldn't be for basic filesystem ops
@@ -91,10 +93,13 @@ class BaseHttpRequestHandler(object):
     def list_dir(self, path):
         """
         Takes an absolute path on the server's filesystem and generates
-        html which lists the path's contents if it is a directory or file contents
+        HTML which lists the path's contents if it is a directory or file contents
         otherwise.
+
         :param path: an absolute file system path
-        :return: file like object that can be written to client connection
+        :type path: str
+        :return: HTML string.
+        :rtype: str
         """
         buffer = []
         buffer.append(doctype())
@@ -215,6 +220,8 @@ class SocketWriter(object):
     Python's SocketWriter used by the standard library's Http server.  This one doesn't
     inherit from BufferedIOBase but just expects the caller sends appropriately encoded
     bytes to send to client connection.
+
+    :param sock: Open socket connection to client
     """
 
     def __init__(self, sock):
@@ -224,13 +231,18 @@ class SocketWriter(object):
         """
         Write an encoded byte string to the SocketWriter's client connection.  This is
         unbuffered.
+
         :param b: An encoded byte string.  We're currently using utf-8 encodings
-        :return:
+        :type b: bytes
+        :return: Number of bytes written
         """
         self._sock.sendall(b)
         return len(b)
 
     def close(self):
+        """
+        Shutdown and close the client connection.
+        """
         self._sock.shutdown(socket.SHUT_WR)
         self._sock.close()
 
