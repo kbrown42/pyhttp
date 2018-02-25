@@ -8,6 +8,14 @@ import posixpath
 
 
 class Request(object):
+    """
+    A simple class to encapsulate reading and parsing a raw HTTP request string.
+    It takes a client socket connection and stores the http command, resource path requested,
+    and http version.  It also stores a headers dictionary.
+
+    @:param conn: A client socket connection
+    """
+
     def __init__(self, conn):
         req_str = conn.recv(1024)
         self._parse_request(req_str.decode())
