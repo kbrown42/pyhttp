@@ -6,7 +6,10 @@ import threading
 class BaseServer(object):
     """
     Basic class for a simple http server.  Handles client connections and passes off
-    to a RequestHandler class.
+    to a :class:`RequestHandler <BaseHttpRequestHandler>` class.
+
+    :param host: host address to listen on
+    :type host: str
     """
 
     def __init__(self, host='localhost', port=8888,

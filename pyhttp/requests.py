@@ -31,6 +31,7 @@ class Request(object):
 
 
 class BaseHttpRequestHandler(object):
+    """Base request handler. Parses connection into a :class:`Request <Request>` object"""
     def __init__(self, conn, addr, server, directory=None):
         self.conn = conn
         self.client_addr = addr
