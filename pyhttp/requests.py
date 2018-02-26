@@ -5,6 +5,9 @@ import html
 import socket
 import mimetypes
 import posixpath
+import subprocess
+import io
+
 
 
 class Request(object):
@@ -23,12 +26,17 @@ class Request(object):
         self._parse_request(req_str.decode())
 
     def _parse_request(self, req_str):
-        header_line = req_str.splitlines()[0]
-        headers = header_line.split()
-        if len(headers) == 3:
-            self.command = headers[0]
-            self.path = headers[1]
-            self.http_ver = headers[2]
+        # print(f'CMJ_debug: Received request: {req_str}, len {len(req_str)}\n')
+        if not len(req_str) == 0:
+            header_line = req_str.splitlines()[0]
+            headers = header_line.split()
+            if len(headers) == 3:
+                self.command = headers[0]
+                self.path = headers[1]
+                self.http_ver = headers[2]
+        else:
+            print(f'CMJ_DEBUG: req_str len 0')
+            return
 
         self._parse_header_fields(req_str)
 
@@ -202,14 +210,31 @@ class BaseHttpRequestHandler(object):
             if f is not None:
                 f_size = os.path.getsize(path)
 
-                self.send_response(HTTPStatus.OK)
-                self.send_header('Content-Type', content_type)
-                self.send_header('Connection', 'close')
-                self.send_header('Content-Length', f_size)
-                self.end_header()
-                self.flush_header()
+                if path[-3:] == '.py' or path[-4:] == '.cgi':
+                    print(f'CMJ_TEST: PY FILE, path:{path}')
+                    p = subprocess.Popen(['python2.7', path], stdout=subprocess.PIPE)
+                    out, err = p.communicate()
+                    f2 = io.BytesIO(out)
 
-                self.wfile.write(f.read())
+                    self.send_response(HTTPStatus.OK)
+                    content_type = mimetypes.types_map.get(ext, 'text/html')
+                    self.send_header('Content-Type', content_type)
+                    self.send_header('Connection', 'close')
+                    self.send_header('Content-Length', len(out))
+                    self.end_header()
+                    self.flush_header()
+
+                    self.wfile.write(f2.read())
+                else:
+                    self.send_response(HTTPStatus.OK)
+                    self.send_header('Content-Type', content_type)
+                    self.send_header('Connection', 'close')
+                    self.send_header('Content-Length', f_size)
+                    self.end_header()
+                    self.flush_header()
+
+                    self.wfile.write(f.read())
+
                 self.finish()
 
     def finish(self):
