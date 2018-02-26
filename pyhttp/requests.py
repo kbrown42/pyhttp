@@ -112,9 +112,9 @@ class BaseHttpRequestHandler(object):
         """
         buffer = []
         buffer.append(doctype())
-        buffer.append(html_head('Directory listing for {}'.format(path)))
+        buffer.append(html_head(f'Directory listing for {path}'))
         buffer.append('<body>')
-        buffer.append(h1_header('Directory listing for {}'.format(path)))
+        buffer.append(h1_header(f'Directory listing for {path}'))
         buffer.append('<hr>')
         files = os.listdir(path)
 
@@ -130,7 +130,7 @@ class BaseHttpRequestHandler(object):
 
             buffer.append("<li>\n")
             ref_name = parse.quote(ref_name)
-            link = '''<a href="{}">{}</a>\n</li>\n'''.format(ref_name, display)
+            link = f'<a href="{ref_name}">{display}</a>\n</li>\n'
             # link = parse.quote(link)
             # link = html.escape(link)
             buffer.append(link)
@@ -148,7 +148,7 @@ class BaseHttpRequestHandler(object):
             code = http_status.value
             msg = http_status.name
 
-        line = '{} {} {}\r\n'.format(self.http_version,code, msg)
+        line = f'{self.http_version} {code} {msg}\r\n'
         self.header_buffer.append(line)
 
     def send_header(self, field, value):
@@ -157,7 +157,7 @@ class BaseHttpRequestHandler(object):
         :param field: Http response field
         :param value: Http response value
         """
-        header = '{}: {}\r\n'.format(field, value)
+        header = f'{field}: {value}\r\n'
         self.header_buffer.append(header)
 
     def end_header(self):
@@ -288,4 +288,4 @@ def html_head(title=''):
 
 
 def h1_header(txt):
-    return '<h1>{txt}</h1>'.format(txt)
+    return f'<h1>{txt}</h1>'

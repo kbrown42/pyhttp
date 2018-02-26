@@ -25,7 +25,7 @@ class BaseServer(object):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind((self.host, self.port))
         self.socket.listen(1)
-        print('Serving at {}:{}'.format(self.host, self.port))
+        print(f'Serving at {self.host}:{self.port}')
         try:
             while True:
                 client_conn, client_addr = self.socket.accept()
