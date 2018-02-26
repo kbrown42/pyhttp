@@ -24,6 +24,7 @@ test_requirements = [
 setup(
     name='pyhttp',
     version='0.1.0',
+    python_requires=">=3.6",
     description="pyhttp is a Python CLI application written as a programming assignment for CS560.",
     long_description=readme,
     author="Kris Brown, Corey Johnson",
@@ -42,10 +43,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
 
     ],
