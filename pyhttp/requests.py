@@ -18,14 +18,17 @@ class Request(object):
 
     def __init__(self, conn):
         req_str = conn.recv(1024)
+        print(f'Received request: {req_str}\n')
+        print(f'Req has {len(req_str)} bytes\n')
         self._parse_request(req_str.decode())
 
     def _parse_request(self, req_str):
-        header = req_str.splitlines()[0].split()
-        if len(header) == 3:
-            self.command = header[0]
-            self.path = header[1]
-            self.http_ver = header[2]
+        header_line = req_str.splitlines()[0]
+        headers = header_line.split()
+        if len(headers) == 3:
+            self.command = headers[0]
+            self.path = headers[1]
+            self.http_ver = headers[2]
 
         self._parse_header_fields(req_str)
 
