@@ -278,13 +278,13 @@ def doctype():
 
 
 def html_head(title=''):
-    return '''
+    return f'''
     <html>
     <head>
     <meta charset="UTF-8" content="text/html">
-    <title>{}</title>
+    <title>{title}</title>
     </head>
-    '''.format(title)
+    '''
 
 
 def h1_header(txt):
