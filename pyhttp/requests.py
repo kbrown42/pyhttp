@@ -33,7 +33,7 @@ class Request(object):
                 self.path = headers[1]
                 self.http_ver = headers[2]
         else:
-            print(f'CMJ_DEBUG: req_str len 0')
+            # print(f'CMJ_DEBUG: req_str len 0')
             return
 
         self._parse_header_fields(req_str)
@@ -112,9 +112,9 @@ class BaseHttpRequestHandler(object):
         """
         buffer = []
         buffer.append(doctype())
-        buffer.append(html_head(f'Directory listing for {path}'))
+        buffer.append(html_head('Directory listing for {}'.format(path)))
         buffer.append('<body>')
-        buffer.append(h1_header(f'Directory listing for {path}'))
+        buffer.append(h1_header('Directory listing for {}'.format(path)))
         buffer.append('<hr>')
         files = os.listdir(path)
 
@@ -130,7 +130,7 @@ class BaseHttpRequestHandler(object):
 
             buffer.append("<li>\n")
             ref_name = parse.quote(ref_name)
-            link = f'''<a href="{ref_name}">{display}</a>\n</li>\n'''
+            link = '''<a href="{}">{}</a>\n</li>\n'''.format(ref_name, display)
             # link = parse.quote(link)
             # link = html.escape(link)
             buffer.append(link)
@@ -148,7 +148,7 @@ class BaseHttpRequestHandler(object):
             code = http_status.value
             msg = http_status.name
 
-        line = f'{self.http_version} {code} {msg}\r\n'
+        line = '{} {} {}\r\n'.format(self.http_version,code, msg)
         self.header_buffer.append(line)
 
     def send_header(self, field, value):
@@ -157,7 +157,7 @@ class BaseHttpRequestHandler(object):
         :param field: Http response field
         :param value: Http response value
         """
-        header = f'{field}: {value}\r\n'
+        header = '{}: {}\r\n'.format(field, value)
         self.header_buffer.append(header)
 
     def end_header(self):
@@ -209,7 +209,7 @@ class BaseHttpRequestHandler(object):
                 f_size = os.path.getsize(path)
 
                 if path[-3:] == '.py' or path[-4:] == '.cgi':
-                    print(f'CMJ_TEST: PY FILE, path:{path}')
+                    # print(f'CMJ_TEST: PY FILE, path:{path}')
                     p = subprocess.Popen(['python2.7', path], stdout=subprocess.PIPE)
                     out, err = p.communicate()
                     f2 = io.BytesIO(out)
@@ -278,14 +278,14 @@ def doctype():
 
 
 def html_head(title=''):
-    return f'''
+    return '''
     <html>
     <head>
     <meta charset="UTF-8" content="text/html">
-    <title>{title}</title>
+    <title>{}</title>
     </head>
-    '''
+    '''.format(title)
 
 
 def h1_header(txt):
-    return f'<h1>{txt}</h1>'
+    return '<h1>{txt}</h1>'.format(txt)
