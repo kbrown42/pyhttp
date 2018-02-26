@@ -41,7 +41,7 @@ class BaseServer(object):
         :param conn: Open client socket
         :param addr: Client socket address
         """
-        self.finish_request(conn, addr, self)
+        self.finish_request(conn, addr)
 
     def finish_request(self, conn, addr):
         self.requestHandler(conn, addr, self)
