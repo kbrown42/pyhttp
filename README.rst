@@ -3,9 +3,6 @@
 =======
 pyhttp
 =======
-cs 560 programming assignment 1
---------------------------------
-
 
 Running the Program
 ----------------------

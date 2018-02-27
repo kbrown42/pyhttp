@@ -6,9 +6,9 @@
 
 Servers
 ========
-There are two different server implementations for this project. A :class:`BaseServer` which handles the TCP socket creation and accepts connections.  :class:`ThreadedServer` overrides methods in :class:`BaseServer` to allow for handling client requests in a separate thread.
+There are two different server implementations for this project. A :class:`BaseServer <pyhttp.servers.BaseServer>` which handles the TCP socket creation and accepts connections.  :class:`pyhttp.ThreadedServer` overrides methods in :class:`pyhttp.BaseServer` to allow for handling client requests in a separate thread.
 
-.. autoclass:: pyhttp.BaseServer
+.. autoclass:: pyhttp.servers.simpleserver.BaseServer
 
 Multi-Threading Support
 ------------------------
