@@ -24,9 +24,9 @@ copyright = '2018, Kris Brown, Corey Johnson'
 author = 'Kris Brown, Corey Johnson'
 
 # The short X.Y version
-version = ''
+version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = ''
+# release = 'alpha'
 
 
 # -- General configuration ---------------------------------------------------
@@ -151,7 +151,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'pyhttp', 'pyhttp Documentation',
+    (master_doc, 'pyhttp', 'pyhttp Design and API Documentation',
      author, 'pyhttp', 'One line description of project.',
      'Miscellaneous'),
 ]

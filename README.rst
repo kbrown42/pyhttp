@@ -3,7 +3,8 @@
 =======
 pyhttp
 =======
-A simple python html web server that is capable of static file serving, directory listing and traversal, cgi script execution, and simple html form processing.  pyhttp is written as our submission for programming assignment 1 in CS 560, Advanced Operating Systems.
+cs 560 programming assignment 1
+--------------------------------
 
 
 Running the Program
@@ -34,9 +35,14 @@ The default host:port is localhost:8888. You can also run in multithreaded mode 
 
     $ pyhttp serve --help
 
+
+================
 Design Overview
-----------------
+================
 Some design information goes here...
+A simple python html web server that is capable of static file serving, directory listing and traversal, cgi script execution, and simple html form processing.  pyhttp is written as our submission for programming assignment 1 in CS 560, Advanced Operating Systems.
+
+
 
 
 
