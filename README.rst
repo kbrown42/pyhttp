@@ -8,18 +8,31 @@ A simple python html web server that is capable of static file serving, director
 
 Running the Program
 ----------------------
-* Clone the repository
-* cd into the top level directory, pyhttp.
-* `pip install -e .` will install the package and it's requirements to your local environment
+* Clone the repository ::
 
-    Note: I recommend using a virtual environment tool like virtualenv or anaconda.
+    $ git clone https://github.com/kbrown42/pyhttp.git
 
-* You can then run the command line application with `pyhttp`
+* cd into the top level directory ::
 
-About
-------
-This documentation serves as the design documentation for our cs 560 programming assignment1
+   $ cd pyhttp
 
+* Install the package and it's requirements to your local environment
+
+    Note: I recommend using a virtual environment tool like virtualenv or anaconda. ::
+
+    $ pip install -e .
+
+You can then run then start the server in single threaded mode with: ::
+
+    $ pyhttp serve
+
+The default host:port is localhost:8888. You can also run in multithreaded mode with ::
+
+    $ pyhttp server --threaded
+
+* For help on command line arguments try ::
+
+    $ pyhttp serve --help
 
 Design Overview
 ----------------

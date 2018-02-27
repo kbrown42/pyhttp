@@ -11,8 +11,6 @@ Welcome to pyhttp's documentation!
    :caption: Contents:
 
    readme
-   authors
-
 
 API Documentation
 ==================
@@ -23,6 +21,12 @@ Specifics on the api can be found below
    :maxdepth: 2
 
    api
+
+
+.. toctree::
+   :maxdepth: 2
+
+   authors
 
 Indices and tables
 ==================
