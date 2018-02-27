@@ -1,7 +1,7 @@
 .. _api:
 
 
-.. module:: pyhttp.servers
+.. module:: pyhttp
 
 
 Servers
