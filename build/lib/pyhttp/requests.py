@@ -21,6 +21,8 @@ class Request(object):
 
     def __init__(self, conn):
         req_str = conn.recv(1024)
+        print(f'Received request: {req_str}\n')
+        print(f'Req has {len(req_str)} bytes\n')
         self._parse_request(req_str.decode())
 
     def _parse_request(self, req_str):
@@ -34,7 +36,7 @@ class Request(object):
                 print(f'CMJ_debug: self.path= {self.path}\n')
                 self.http_ver = headers[2]
         else:
-            # print(f'CMJ_DEBUG: req_str len 0')
+            print(f'CMJ_DEBUG: req_str len 0')
             return
 
         self._parse_header_fields(req_str)
@@ -131,7 +133,7 @@ class BaseHttpRequestHandler(object):
 
             buffer.append("<li>\n")
             ref_name = parse.quote(ref_name)
-            link = f'<a href="{ref_name}">{display}</a>\n</li>\n'
+            link = f'''<a href="{ref_name}">{display}</a>\n</li>\n'''
             # link = parse.quote(link)
             # link = html.escape(link)
             buffer.append(link)
@@ -187,7 +189,6 @@ class BaseHttpRequestHandler(object):
             calc_str = path_params[1].split('&')[0][6:]
             print(f'CMJ_TEST: CalcStr: {calc_str}')
             path = path_params[0]
-            # TODO: Mod online_calc.cgi file to run calc_str
 
         if os.path.isdir(path):
             print(f'CMJ_TEST: dirispath')
@@ -222,12 +223,8 @@ class BaseHttpRequestHandler(object):
                 f_size = os.path.getsize(path)
 
                 if path[-3:] == '.py' or path[-4:] == '.cgi':
-                    # print(f'CMJ_TEST: PY FILE, path:{path}')
-                    p = subprocess.Popen(['python2.7', path], stdout=subprocess.PIPE)
-
-                    # TODO: pass calc_str to online_calc.cgi like this?:
-                    # p = subprocess.Popen(['python2.7', path, calc_str], stdout=subprocess.PIPE)
-
+                    print(f'CMJ_TEST: PY FILE, path:{path}')
+                    p = subprocess.Popen(['python2.7', path, calc_str], stdout=subprocess.PIPE)
                     out, err = p.communicate()
                     f2 = io.BytesIO(out)
 
