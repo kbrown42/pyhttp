@@ -1,13 +1,16 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
+
 import sys, os
+import platform
+
 
 info = os.popen('uptime').read()
 
 
-print """\
+print(f"""\
 <html>
 <body>
-<h2>Server up time:<br> {}</h2>
+<h2>Server up time:<br> {info}</h2>
 </body>
 </html>
-""".format(info)
+""")

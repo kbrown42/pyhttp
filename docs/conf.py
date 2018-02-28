@@ -41,6 +41,7 @@ version = '1.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinx_click.ext',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -124,13 +125,15 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
+    'transition': '\n\n\\smallskip\\hrule\\smallskip\n\n'
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
+title = 'pyhttp API and Documentation Programming Assignment 1'
 latex_documents = [
-    (master_doc, 'pyhttp.tex', 'pyhttp Documentation',
+    (master_doc, 'pyhttp.tex', title,
      'Kris Brown, Corey Johnson', 'manual'),
 ]
 

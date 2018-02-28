@@ -6,31 +6,41 @@ pyhttp
 
 Running the Program
 ----------------------
-* Clone the repository ::
+
+.. Note:: I recommend using a virtual environment tool like virtualenv or anaconda.
+
+Clone the repository ::
 
     $ git clone https://github.com/kbrown42/pyhttp.git
 
-* cd into the top level directory ::
+cd into the top level directory ::
 
    $ cd pyhttp
 
-* Install the package and it's requirements to your local environment
+Install the package and it's requirements to your local environment ::
 
-    Note: I recommend using a virtual environment tool like virtualenv or anaconda. ::
+   $ pip install .
 
-    $ pip install -e .
+or ::
 
-You can then run then start the server in single threaded mode with: ::
+   $ python setup.py install
+
+You can then run then start the server in single threaded by running ::
 
     $ pyhttp serve
 
-The default host:port is localhost:8888. You can also run in multithreaded mode with ::
+The default host:port is localhost:8888. You can also run in multi-threaded mode with ::
 
     $ pyhttp server --threaded
 
-* For help on command line arguments try ::
 
-    $ pyhttp serve --help
+Command line API
+-----------------
+Full documentation of the command line app:
+
+.. click:: pyhttp.__main__:pyhttp
+    :prog: pyhttp
+    :show-nested:
 
 
 ================

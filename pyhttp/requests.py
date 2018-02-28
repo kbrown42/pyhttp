@@ -4,10 +4,8 @@ from urllib import parse
 import html
 import socket
 import mimetypes
-import posixpath
 import subprocess
 import io
-
 
 
 class Request(object):
@@ -18,9 +16,18 @@ class Request(object):
 
     :param conn: A client socket connection
     """
+    POST = 'POST'
+    GET = 'GET'
 
     def __init__(self, conn):
         req_str = conn.recv(1024)
+        self.method = ''
+        self.path = ''
+        self.http_ver = ''
+        self.query_params = ''
+        self.headers = dict()
+
+        print(f'Debug Request String:\n{req_str.decode()}')
         self._parse_request(req_str.decode())
 
     def _parse_request(self, req_str):
@@ -28,24 +35,35 @@ class Request(object):
         if not len(req_str) == 0:
             header_line = req_str.splitlines()[0]
             headers = header_line.split()
+            print(f'\nHeaders:\n{headers}\n')
             if len(headers) == 3:
-                self.command = headers[0]
+                self.method = headers[0]
                 self.path = headers[1]
                 print(f'CMJ_debug: self.path= {self.path}\n')
                 self.http_ver = headers[2]
+            else:
+                raise RequestParseError(req_str)
         else:
-            # print(f'CMJ_DEBUG: req_str len 0')
-            return
+            print(f'CMJ_DEBUG: req_str len 0')
+            raise RequestParseError(req_str)
 
         self._parse_header_fields(req_str)
 
     def _parse_header_fields(self, req_str):
         lines = req_str.splitlines()[1:]
-        self.headers = dict()
+
         for line in lines:
             if line:
-                k, v = line.split(': ')
-                self.headers[k] = v
+                vals = line.split(': ')
+                # We're dealing with request header fields
+                if len(vals) == 2:
+                    self.headers[vals[0]] = vals[1]
+                # We're done with header fields. Onto content
+                # Check for query string in post request
+                elif len(vals) == 1 and self.method == Request.POST:
+                    query_str = line.split('?')
+                    self.query_params = query_str[0]
+                    print(f'\nDEBUG: Parsed query param: {query_str}\n')
 
 
 class BaseHttpRequestHandler(object):
@@ -65,12 +83,13 @@ class BaseHttpRequestHandler(object):
         self.header_buffer = []
         self.wfile = SocketWriter(conn)
         self.http_version = 'HTTP/1.1'
-        self.request = Request(conn)
+        self.request = None
 
         if directory is None:
             directory = os.getcwd()
 
         self.directory = directory
+
         self.handle()
 
     def get_path(self, path):
@@ -177,24 +196,26 @@ class BaseHttpRequestHandler(object):
         self.header_buffer = []
 
     def handle(self):
+        try:
+            self.request = Request(self.conn)
+        # For some reason we keep getting empty requests
+        # from the browser.  In that case we'll just return
+        # them to the root of the directory
+
+        except RequestParseError:
+            self.send_response(HTTPStatus.MOVED_PERMANENTLY)
+            self.send_header('Location', '/')
+            self.end_header()
+            self.flush_header()
+            return None
+
         path = self.get_path(self.request.path)
-
-        path_params = self.request.path.split('?')
-        calc_str = ''
-
-        if len(path_params) >= 2:
-            print(f'CMJ_TEST: CGI PARAMS: {path_params[1]}')
-            calc_str = path_params[1].split('&')[0][6:]
-            print(f'CMJ_TEST: CalcStr: {calc_str}')
-            path = path_params[0]
-            # TODO: Mod online_calc.cgi file to run calc_str
+        print(f'Handling path {path}')
 
         if os.path.isdir(path):
-            print(f'CMJ_TEST: dirispath')
+            print(f'CMJ_TEST: path is dir')
             html_contents = self.list_dir(path)
             if html_contents is not None:
-                # Probably should add date information.
-                # Not important right now
                 self.send_response(HTTPStatus.OK)
                 self.send_header('Content-Type', 'text/html')
                 self.send_header('Connection', 'close')
@@ -202,45 +223,37 @@ class BaseHttpRequestHandler(object):
                 self.flush_header()
 
                 self.wfile.write(html_contents.encode('utf-8'))
-                self.finish()
 
-        # Otherwise, we're dealing with a file.  Could be cgi or txt
-        # or something else.  Handle this later.
+        # Check if it's a file
         elif os.path.isfile(path):
-            print(f'CMJ_TEST: dirisfile')
-            base_path, ext = posixpath.splitext(path)
+            # TODO: Need to check if we're in the cgi-bin dir first
+            print(f'CMJ_TEST: path is file')
+            cgi_exts = ['.py', '.cgi']
+            cgi_dir = 'cgi-bin'
+
+            base_path, ext = os.path.splitext(path)
             content_type = mimetypes.types_map.get(ext, 'text/plain')
-            f = None
-            try:
-                f = open(path, 'rb')
 
-            except OSError:
-                # TODO: do error handling
-                self.send_response(HTTPStatus.NOT_FOUND)
+            abs_dir = os.path.dirname(path)
+            parent_dir = os.path.basename(abs_dir)
 
-            if f is not None:
-                f_size = os.path.getsize(path)
+            # First, see if we need to run a cgi script
+            if parent_dir in cgi_dir and ext in cgi_exts:
+                self.run_cgi(path)
 
-                if path[-3:] == '.py' or path[-4:] == '.cgi':
-                    # print(f'CMJ_TEST: PY FILE, path:{path}')
-                    p = subprocess.Popen(['python2.7', path], stdout=subprocess.PIPE)
+            # Otherwise, treat like regular file
+            else:
+                f = None
+                try:
+                    f = open(path, 'rb')
 
-                    # TODO: pass calc_str to online_calc.cgi like this?:
-                    # p = subprocess.Popen(['python2.7', path, calc_str], stdout=subprocess.PIPE)
+                except OSError:
+                    # TODO: do error handling
+                    self.send_response(HTTPStatus.NOT_FOUND)
 
-                    out, err = p.communicate()
-                    f2 = io.BytesIO(out)
+                if f is not None:
+                    f_size = os.path.getsize(path)
 
-                    self.send_response(HTTPStatus.OK)
-                    content_type = mimetypes.types_map.get(ext, 'text/html')
-                    self.send_header('Content-Type', content_type)
-                    self.send_header('Connection', 'close')
-                    self.send_header('Content-Length', len(out))
-                    self.end_header()
-                    self.flush_header()
-
-                    self.wfile.write(f2.read())
-                else:
                     self.send_response(HTTPStatus.OK)
                     self.send_header('Content-Type', content_type)
                     self.send_header('Connection', 'close')
@@ -250,9 +263,56 @@ class BaseHttpRequestHandler(object):
 
                     self.wfile.write(f.read())
 
-                self.finish()
         else:
+
+            self.send_response(HTTPStatus.NOT_FOUND)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Connection', 'close')
+            self.end_header()
+            self.flush_header()
+
+            self.wfile.write(b"I can't handle that...")
+
             print(f'CMJ_TEST: path not dir or file: {path}')
+
+        self.finish()
+
+    def run_cgi(self, path):
+        param_str = self.request.query_params
+        print("DEBUG: path is cgi")
+        print(f'Debug: param string {param_str}')
+        if param_str:
+            field, calc_str = param_str.split("=")
+
+            if calc_str:
+                calc_str = parse.unquote_plus(calc_str)
+                p = subprocess.Popen(['python', path, calc_str],
+                                     stdout=subprocess.PIPE)
+        else:
+            p = subprocess.Popen(['python', path], stdout=subprocess.PIPE)
+
+        out, err = p.communicate()
+        print(f'\nreceived {out} from subprocess\n')
+
+        if out:
+            self.send_response(HTTPStatus.OK)
+        else:
+            self.send_response(HTTPStatus.INTERNAL_SERVER_ERROR)
+            out = b'''
+                <html>
+                <body>
+                <h2>I'm not sure what went wrong....</h2>
+                </body>
+                </html>
+            '''
+        f2 = io.BytesIO(out)
+
+        self.send_header('Content-Type', 'text/html')
+        self.send_header('Connection', 'close')
+        self.send_header('Content-Length', len(out))
+        self.end_header()
+        self.flush_header()
+        self.wfile.write(f2.read())
 
     def finish(self):
         self.wfile.close()
@@ -290,6 +350,20 @@ class SocketWriter(object):
         """
         self._sock.shutdown(socket.SHUT_WR)
         self._sock.close()
+
+
+class RequestError(Exception):
+    def __init__(self, request, msg=None):
+        if msg is None:
+            msg = f'An error occurred with request:\n{request}'
+
+        super(RequestError, self).__init__(msg)
+        self.request = request
+
+
+class RequestParseError(RequestError):
+    def __init__(self, req, msg=None):
+        super(RequestParseError, self).__init__(req, msg)
 
 
 def doctype():
