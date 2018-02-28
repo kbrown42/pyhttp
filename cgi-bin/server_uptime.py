@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os
-import platform
+import os
 
 
 info = os.popen('uptime').read()

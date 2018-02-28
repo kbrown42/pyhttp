@@ -1,7 +1,6 @@
 from http import HTTPStatus
 import os
 from urllib import parse
-import html
 import socket
 import mimetypes
 import subprocess
