@@ -1,10 +1,9 @@
 digraph ""{
     compound=true;
     rankdir=LR;
-    size="8.5";
 
-    "Concurrent Client Connections" -> "Threaded Server";
-    "Concurrent Client Connections" -> "Threaded Server";
+    "Client Conns" -> "Threaded Server";
+    "Client Conns" -> "Threaded Server";
 
 
     subgraph cluster_1 {
@@ -25,7 +24,7 @@ digraph ""{
         CGI -> SubProcess [dir=both];
     }
 
-    RequestHandler-> "Concurrent Client Connections" [ltail=cluster_0, label="Responses"];
+    RequestHandler-> "Client Conns" [ltail=cluster_0, label="Responses"];
 
 }
 
