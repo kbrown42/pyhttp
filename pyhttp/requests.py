@@ -213,58 +213,13 @@ class BaseHttpRequestHandler(object):
         print(f'Handling path {path}')
 
         if os.path.isdir(path):
-            print(f'CMJ_TEST: path is dir')
-            html_contents = self.list_dir(path)
-            if html_contents is not None:
-                self.send_response(HTTPStatus.OK)
-                self.send_header('Content-Type', 'text/html')
-                self.send_header('Connection', 'close')
-                self.end_header()
-                self.flush_header()
-
-                self.wfile.write(html_contents.encode('utf-8'))
+            self.do_directory(path)
 
         # Check if it's a file
         elif os.path.isfile(path):
-            # TODO: Need to check if we're in the cgi-bin dir first
-            print(f'CMJ_TEST: path is file')
-            cgi_exts = ['.py', '.cgi']
-            cgi_dir = 'cgi-bin'
-
-            base_path, ext = os.path.splitext(path)
-            content_type = mimetypes.types_map.get(ext, 'text/plain')
-
-            abs_dir = os.path.dirname(path)
-            parent_dir = os.path.basename(abs_dir)
-
-            # First, see if we need to run a cgi script
-            if parent_dir in cgi_dir and ext in cgi_exts:
-                self.run_cgi(path)
-
-            # Otherwise, treat like regular file
-            else:
-                f = None
-                try:
-                    f = open(path, 'rb')
-
-                except OSError:
-                    # TODO: do error handling
-                    self.send_response(HTTPStatus.NOT_FOUND)
-
-                if f is not None:
-                    f_size = os.path.getsize(path)
-
-                    self.send_response(HTTPStatus.OK)
-                    self.send_header('Content-Type', content_type)
-                    self.send_header('Connection', 'close')
-                    self.send_header('Content-Length', f_size)
-                    self.end_header()
-                    self.flush_header()
-
-                    self.wfile.write(f.read())
+            self.do_file(path)
 
         else:
-
             self.send_response(HTTPStatus.NOT_FOUND)
             self.send_header('Content-Type', 'text/plain')
             self.send_header('Connection', 'close')
@@ -277,10 +232,59 @@ class BaseHttpRequestHandler(object):
 
         self.finish()
 
+    def do_directory(self, path):
+        print(f'CMJ_TEST: path is dir')
+        html_contents = self.list_dir(path)
+        if html_contents is not None:
+            self.send_response(HTTPStatus.OK)
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Connection', 'close')
+            self.end_header()
+            self.flush_header()
+
+            self.wfile.write(html_contents.encode('utf-8'))
+
+    def do_file(self, path):
+        # TODO: Need to check if we're in the cgi-bin dir first
+        print(f'CMJ_TEST: path is file')
+        cgi_exts = ['.py', '.cgi']
+        cgi_dir = 'cgi-bin'
+        base_path, ext = os.path.splitext(path)
+        content_type = mimetypes.types_map.get(ext, 'text/plain')
+        abs_dir = os.path.dirname(path)
+        parent_dir = os.path.basename(abs_dir)
+        # First, see if we need to run a cgi script
+        if parent_dir in cgi_dir and ext in cgi_exts:
+            self.run_cgi(path)
+
+        # Otherwise, treat like regular file
+        else:
+            f = None
+            try:
+                f = open(path, 'rb')
+
+            except OSError:
+                # TODO: do error handling
+                self.send_response(HTTPStatus.NOT_FOUND)
+
+            if f is not None:
+                f_size = os.path.getsize(path)
+
+                self.send_response(HTTPStatus.OK)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Connection', 'close')
+                self.send_header('Content-Length', f_size)
+                self.end_header()
+                self.flush_header()
+
+                self.wfile.write(f.read())
+
     def run_cgi(self, path):
         param_str = self.request.query_params
         print("DEBUG: path is cgi")
         print(f'Debug: param string {param_str}')
+        p = None
+        out = b''
         if param_str:
             field, calc_str = param_str.split("=")
 
@@ -290,9 +294,8 @@ class BaseHttpRequestHandler(object):
                                      stdout=subprocess.PIPE)
         else:
             p = subprocess.Popen(['python', path], stdout=subprocess.PIPE)
-
-        out, err = p.communicate()
-        print(f'\nreceived {out} from subprocess\n')
+        if p is not None:
+            out, err = p.communicate()
 
         if out:
             self.send_response(HTTPStatus.OK)
