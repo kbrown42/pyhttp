@@ -1,0 +1,32 @@
+digraph ""{
+    compound=true;
+    rankdir=LR;
+    size="8.5";
+
+    "Concurrent Client Connections" -> "Threaded Server";
+    "Concurrent Client Connections" -> "Threaded Server";
+
+
+    subgraph cluster_1 {
+        label="Server and Threads";
+
+        "Threaded Server" -> Thread1;
+        "Threaded Server"-> Thread2;
+    }
+
+    Thread1 -> RequestHandler [lhead=cluster_0, ltail=cluster_1];
+    Thread2 -> RequestHandler [lhead=cluster_0, ltail=cluster_1];
+
+    subgraph cluster_0 {
+        label="Request Handlers (1 per thread)"
+        RequestHandler -> Directory [dir=both];
+        RequestHandler -> File [dir=both];
+        RequestHandler -> CGI [dir=both];
+        CGI -> SubProcess [dir=both];
+    }
+
+    RequestHandler-> "Concurrent Client Connections" [ltail=cluster_0, label="Responses"];
+
+}
+
+

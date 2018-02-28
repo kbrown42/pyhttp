@@ -11,11 +11,10 @@ def pyhttp():
 @pyhttp.command()
 @click.option('-h', '--host', default='localhost')
 @click.option('-p', '--port', default=8888)
-@click.option('--threaded', is_flag=True, help="Threading flag")
+@click.option('--threaded', is_flag=True, help="Enable multi-threading")
 def serve(host, port, threaded):
     """
     Start a simple http server in the current working directory.
-
     """
     if not threaded:
         server = BaseServer(host=host, port=port)

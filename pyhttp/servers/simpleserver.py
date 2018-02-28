@@ -48,7 +48,7 @@ class BaseServer(object):
 
     def close(self):
         # Not sure that we need this first line
-        self.socket.shutdown(socket.SHUT_RDWR)
+        # self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
 
 

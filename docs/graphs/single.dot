@@ -1,0 +1,12 @@
+digraph "" {
+  rankdir=LR;
+
+  Client -> Server;
+  Server -> RequestHandler;
+  RequestHandler -> Directory [dir=both];
+  RequestHandler -> File [dir=both];
+  RequestHandler -> CGI [dir=both];
+  RequestHandler -> Client;
+
+  CGI -> SubProcess [dir=both];
+}

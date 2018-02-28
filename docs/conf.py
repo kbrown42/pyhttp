@@ -162,3 +162,4 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+graphviz_output_format = 'svg'
