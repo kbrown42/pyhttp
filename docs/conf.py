@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.graphviz',
     'sphinx_click.ext',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -163,3 +164,7 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 graphviz_output_format = 'png'
+
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3', None),
+}
