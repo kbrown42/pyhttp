@@ -32,6 +32,7 @@ class BaseServer(object):
                 self.process_request(client_conn, client_addr)
 
         except KeyboardInterrupt:
+            print("Received keyboard interrupt")
             self.close()
 
     def process_request(self, conn, addr):

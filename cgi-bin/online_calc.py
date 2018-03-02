@@ -2,7 +2,7 @@
 
 import sys
 from code import compile_command
-
+import math
 
 expr = sys.argv[1]
 result = ''

@@ -24,11 +24,5 @@ def serve(host, port, threaded):
     server.serve_forever()
 
 
-# @pyhttp.command()
-# def cmd2():
-#     """Command on pyhttp"""
-#     click.echo('pyhttp cmd2')
-
-
 if __name__ == '__main__':
     pyhttp()

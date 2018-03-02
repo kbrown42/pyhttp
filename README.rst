@@ -58,15 +58,21 @@ Multi-Threaded Server Graph
 
 .. graphviz:: graphs/threaded.dot
 
-.. note:: Each thrad actualy uses its own :class:`RequestHandler <pyhttp.BaseHttpRequestHandler>`.  This is removed in order to fit the diagram appropriately.
+.. note:: Each thread actually uses its own :class:`RequestHandler <pyhttp.BaseHttpRequestHandler>`.  This is removed in order to fit the diagram appropriately.
 
 Some design information goes here...
 A simple python html web server that is capable of static file serving, directory listing and traversal, cgi script execution, and simple html form processing.  pyhttp is written as our submission for programming assignment 1 in CS 560, Advanced Operating Systems.
 
 
 
+CGI
+----
 
+:: Corey do this part...
 
+.. rubric:: Some paragraph Heading
+
+Paragraph info....
 
 
 
