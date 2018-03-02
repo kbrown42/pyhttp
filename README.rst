@@ -63,6 +63,16 @@ Multi-Threaded Server Graph
 Some design information goes here...
 A simple python html web server that is capable of static file serving, directory listing and traversal, cgi script execution, and simple html form processing.  pyhttp is written as our submission for programming assignment 1 in CS 560, Advanced Operating Systems.
 
+CGI Scripts
+---------------------------
+
+We implemented two different server side CGI scripts for Project 1 that both display dynamic content generation embedded in an automatic webpage response. 
+
+The first CGI script displays the server up-time, number of logged in users, and current server processor load average. It is implemented by creating a python cgi script to dynamically build the dynamic information into an HTML string that is sent by our server to the client. Each time the user navigates to the UpTime page, the new information is dynamically generated into the served webpage. 
+
+The second CGI script is a General Online Calculator. This script works similarly to UpTime, but allow the user to enter a string of numbers to be computed. The string needs to be valid python syntax and can use the basic math facilities of python. When the user enters the information into the calculator and clicks the 'calculate' button, the HTML page sends the user's input string along with the page path requested to the server. This information is parsed from the path and sent to the calculator CGI script. Again, the dynamic content is generated and served as a page to the client. 
+
+The testing of each of these scripts can be seen in the images below. 
 
 
 CGI
