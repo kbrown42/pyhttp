@@ -15,7 +15,7 @@ Welcome to pyhttp's documentation!
 API Documentation
 ==================
 
-Specifics on the api can be found below
+Specifics on the API can be found below
 
 .. toctree::
    :maxdepth: 2

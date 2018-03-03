@@ -26,24 +26,19 @@ class Request(object):
         self.query_params = ''
         self.headers = dict()
 
-        print(f'Debug Request String:\n{req_str.decode()}')
         self._parse_request(req_str.decode())
 
     def _parse_request(self, req_str):
-        # print(f'CMJ_debug: Received request: {req_str}, len {len(req_str)}\n')
         if not len(req_str) == 0:
             header_line = req_str.splitlines()[0]
             headers = header_line.split()
-            print(f'\nHeaders:\n{headers}\n')
             if len(headers) == 3:
                 self.method = headers[0]
                 self.path = headers[1]
-                print(f'CMJ_debug: self.path= {self.path}\n')
                 self.http_ver = headers[2]
             else:
                 raise RequestParseError(req_str)
         else:
-            print(f'CMJ_DEBUG: req_str len 0')
             raise RequestParseError(req_str)
 
         self._parse_header_fields(req_str)
@@ -62,7 +57,6 @@ class Request(object):
                 elif len(vals) == 1 and self.method == Request.POST:
                     query_str = line.split('?')
                     self.query_params = query_str[0]
-                    print(f'\nDEBUG: Parsed query param: {query_str}\n')
 
 
 class BaseHttpRequestHandler(object):
@@ -209,7 +203,6 @@ class BaseHttpRequestHandler(object):
             return None
 
         path = self.get_path(self.request.path)
-        print(f'Handling path {path}')
 
         if os.path.isdir(path):
             self.do_directory(path)
@@ -227,12 +220,9 @@ class BaseHttpRequestHandler(object):
 
             self.wfile.write(b"I can't handle that...")
 
-            print(f'CMJ_TEST: path not dir or file: {path}')
-
         self.finish()
 
     def do_directory(self, path):
-        print(f'CMJ_TEST: path is dir')
         html_contents = self.list_dir(path)
         if html_contents is not None:
             self.send_response(HTTPStatus.OK)
@@ -244,8 +234,14 @@ class BaseHttpRequestHandler(object):
             self.wfile.write(html_contents.encode('utf-8'))
 
     def do_file(self, path):
+        """
+        Handles the response for all file types.  Determines whether to serve file
+        contents or if the path is a CGI script that should be executed.
+
+        :param path: An absolute filesystem path
+        :type path: str
+        """
         # TODO: Need to check if we're in the cgi-bin dir first
-        print(f'CMJ_TEST: path is file')
         cgi_exts = ['.py', '.cgi']
         cgi_dir = 'cgi-bin'
         base_path, ext = os.path.splitext(path)
@@ -279,9 +275,14 @@ class BaseHttpRequestHandler(object):
                 self.wfile.write(f.read())
 
     def run_cgi(self, path):
+        """
+        Executes a CGI script in a separate process and writes the output
+        into the response buffer.
+
+        :param path: An absolute filesystem path
+        :type path: str
+        """
         param_str = self.request.query_params
-        print("DEBUG: path is cgi")
-        print(f'Debug: param string {param_str}')
         p = None
         out = b''
         if param_str:
