@@ -28,6 +28,7 @@ Request Handling
 .. autoclass:: pyhttp.Request
 .. autoclass:: pyhttp.BaseHttpRequestHandler
 
+.. automethod:: pyhttp.BaseHttpRequestHandler.handle
 .. automethod:: pyhttp.BaseHttpRequestHandler.get_path
 
 .. automethod:: pyhttp.BaseHttpRequestHandler.list_dir

@@ -189,6 +189,12 @@ class BaseHttpRequestHandler(object):
         self.header_buffer = []
 
     def handle(self):
+        """
+        Dispatches appropriate method to handle a request.  Could be
+        serving a static file, directory listing, or running a
+        CGI script.
+
+        """
         try:
             self.request = Request(self.conn)
         # For some reason we keep getting empty requests

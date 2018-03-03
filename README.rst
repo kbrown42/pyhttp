@@ -64,7 +64,7 @@ When the user starts the application from the command line, a server is initiali
 
 The RequestHandler is initialized with connection information, an open socket connection and an address, and a base directory to serve from.  The directory is by default the root directory of our server package.  A Request object is created by the RequestHandler which proceeds to parse the raw HTTP request string.  From this we extract the HTTP method, requested resource path, and HTTP version.  After storing Request headers in a dictionary, we check for query information in the request content in the case of a POST request.  All this information is stored for use by the handler.
 
-Once the request has been parsed, the :meth:`~pyhttp.BaseHTTPRequestHandler.handle` method creates an absolute file path based on the request resource and chooses one of three options.  We can list a directory, serve static file contents, or start a new process which runs one of our CGI scripts.  CGI scripts are contained in a special directory location, `/cgi-bin/`.  A more thorough description can be find in the :ref:`CGI` section.  By using the :mod:`mimetypes` module in the Python standard library we can send the appropriate mime-type in the Content-Type for all common files and have the browser render it properly.  Thus, any file which is not in the special cgi-bin directory will have its contents rendered for the user.  In the case of a directory, we retrieve a list of all files contained in the requested location and create hyperlinks that will will lead to those resources.
+Once the request has been parsed, the :meth:`~pyhttp.BaseHttpRequestHandler.handle` method creates an absolute file path based on the request resource and chooses one of three options.  We can list a directory, serve static file contents, or start a new process which runs one of our CGI scripts.  CGI scripts are contained in a special directory location, `/cgi-bin/`.  A more thorough description can be find in the :ref:`CGI` section.  By using the :mod:`mimetypes` module in the Python standard library we can send the appropriate mime-type in the Content-Type for all common files and have the browser render it properly.  Thus, any file which is not in the special cgi-bin directory will have its contents rendered for the user.  In the case of a directory, we retrieve a list of all files contained in the requested location and create hyperlinks that will will lead to those resources.
 
 During the handling of a request, a buffer is maintained which contains lines of text that include response data and content for the browser to render.  Once the action is completed, we join all the lines together into a well formed HTTP response byte string and flush the buffer through a :class:`~pyhttp.requests.SocketWriter`, a simple wrapper around the client socket with a file-like API.  Finally, the socket is closed and the thread stops if the server is in threaded mode.  Upon termination of the server from the command line, the threaded subclass waits for all threads to finish their responses before terminating.  Below are graphs which show a depiction of this process for both server types.  Class and method definitions, along with links to source code may be viewed in the :ref:`API <api>` section.
 
@@ -104,7 +104,7 @@ Screenshots
 .. rubric:: Root directory listing
 
 .. image:: img/dir_listing.png
-    :alt: top level directory listing
+   :alt: top level directory listing
 
 .. rubric:: Rendering HTML
 
